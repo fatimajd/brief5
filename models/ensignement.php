@@ -1,83 +1,37 @@
 <?php
+
 /**
  * 
  */
+require_once 'Connection.php';
 class Ensignement
 {
-	static public function getAllen(){
-		$stmt = DB::connect()->prepare('SELECT * FROM ensignement');
-		$stmt->execute();
-		return $stmt->fetchAll();
-		$stmt->close();
-		$stmt = null;
-	}
-	static public function getEnsignement($data){
-		$id = $data['id'];
-		try{
-			$query = 'SELECT * FROM ensignement WHERE id=:id';
+	
+	public $nom;
+	public $prenom;
+	public $email;
+	public $password;
+	public $matiere;
+	public $role="user";
+	static $table="user";
 
-		$stmt = DB::connect()->prepare($query);
-		$stmt->execute(array(":id" =>$id));
-		$ensignement = $stmt->fetch(PDO::FETCH_OBJ);
-		return $ensignement;
+    public function insert(){
 
+     	$cnx = new Connection;
+     	$cnx->insert(self::$table,['nom','prenom','email','pwd','role'],[$this->nom,$this->prenom,$this->email,$this->password,$this->role]);
+     	$idE="SELECT * FROM user ORDER BY id DESC limit 1";
+     	$query1=$cnx->sql->prepare($idE);
+ 		$query1->execute();
+ 		$rowid=$query1->fetch();
+ 		$lastId = $rowid[0];
+ 		$cnx->insert("ensignement",['idE','idM'],[$lastId,$this->matiere]);
 
-		}catch(PDOException $ex){
-			echo "erreur".$ex->getMessage();
-		}
-	}
-	static public function addens($data){
-		$stmt = DB::connect()->prepare('INSERT INTO ensignement (nom,prenom,email,password)VALUES(:nom,:prenom,:email,:password)');
-		$stmt->bindParam(':nom',$data['nom']);
-		$stmt->bindParam(':prenom',$data['prenom']);
-		$stmt->bindParam(':email',$data['email']);
-		$stmt->bindParam(':password',$data['password']);
-
-		if ($stmt->execute()) {
-			return 'ok';		
-		}else{
-			return 'error';
-		}
-		$stmt->close();
-		$stmt = null;
-
-
-
-	}
-	static public function update($data){
-		$stmt = DB::connect()->prepare('UPDATE ensignement SET nom = :nom ,prenom = :prenom ,email = :email, password = :password WHERE id = :id');
-		$stmt->bindParam(':id',$data['id']);
-		$stmt->bindParam(':nom',$data['nom']);
-		$stmt->bindParam(':prenom',$data['prenom']);
-		$stmt->bindParam(':email',$data['email']);
-		$stmt->bindParam(':password',$data['password']);
-		if ($stmt->execute()) {
-			return 'ok';		
-		}else{
-			return 'error';
-		}
-		$stmt->close();
-		$stmt = null;
-
-
-
-	}
-	static public function delete($data){
-		$id = $data['id'];
-		try{
-		$query = 'DELETE  FROM ensignement WHERE id=:id';
-		$stmt = DB::connect()->prepare($query);
-		$stmt->execute(array(":id" =>$id));
-		if ($stmt->execute()) {
-			return 'ok';		
-		}
-		
-
-		}catch(PDOException $ex){
-			echo "erreur".$ex->getMessage();
-		}
-	}
+     }
+     public function getOne($idU){
+     	$cnx = new Connection;
+     	$idE="SELECT id FROM ensignement WHERE idE=$idU";
+     	$query1=$cnx->sql->prepare($idE);
+ 		$query1->execute();
+ 		return $query1->fetch();
+     }
 }
-
-
- ?>

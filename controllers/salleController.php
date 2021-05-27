@@ -1,67 +1,72 @@
 <?php
 
-class salleController{
-	public function getAllSalle(){
-		$salles = Salle::getAlls();
-		return $salles;
+/**
+ * 
+ */
+require_once 'models/salle.php';
+class SalleController
+{
+	
+	function index()
+	{
+		$obj = new Salle;
+		 $salles = $obj->getAll();
+
+		require_once __DIR__.'/../view/salle/index.php';
 	}
-		public function getOneSalle(){
-		if (isset($_POST['id'])) {
-			$data  = array(
-				'id' =>$_POST['id'] 
-		);
+
+	function create()
+	{
+		require_once __DIR__.'/../view/salle/create.php';
+	}
+
+	function save()
+	{
 		
-		$salle = Salle::getSalle($data);
-		return $salle;
-	}
-	}
+		$i = 0;
+			if(isset($_POST['submit'])){
+				$Libelle=$_POST['libelle'];
+				$capacite=$_POST['capacite'];
 
-	public function addSalle(){
-		if (isset($_POST['submit'])) {
-			if (!empty($_POST['libellesalle'])&& !empty($_POST['capacitesalle'])){ 
-			$salles= array(
-				'libellesalle' =>$_POST['libellesalle'] ,
-				'capacitesalle' =>$_POST['capacitesalle']);
-			$result = Salle::addsal($salles);
-			header('location:addsalle');
-		}else{
-				echo("<SCRIPT LANGUAGE='JavaScript'>
-                window.alert('Tous les champs obligatoir');
-                </SCRIPT>");
-			}
-		}
-	}
 
-	public function updateSalle(){
-		if (isset($_POST['submit'])) {
-			$salles= array(
-				'id' =>$_POST['id'] ,
-				'libellesalle' =>$_POST['libellesalle'] ,
-				'capacitesalle' =>$_POST['capacitesalle'] ,
+	
+				$salle = new Salle();
+				$salle->insert($Libelle,$capacite);
+
 				
-                 );
-			$result = Salle::update($salles);
-			if ($result === 'ok')
-			 {
-			 	header('location:addsalle');
+
+				
+				while(isset($_POST['Libelle'.$i])){
+					$salle = new Salle();
+					$salle->insert($_POST['Libelle'.$i],$_POST['capacite'.$i]);
+					$i++;
+				}
+				
+				header('location:http://localhost/brief5/salle/index');
 				
 			}else{
-				echo $result;
-			}
+			header('location:http://localhost/brief5/');
 		}
+		}
+		
+
+	 public function delete($id){
+		$obj = new Salle;
+		$obj->onedelete($id);
+		header('location:http://localhost/brief5/salle/index');
+		
 	}
-	public function deleteSalle(){
-		if (isset($_POST['id'])) {
-			$data['id']= $_POST['id'];
-			$result = Salle::delete($data);
-			if ($result === 'ok') {
-				
-				header('location:addsalle');		}
-		}else{
-			echo $result;
-		}
+	function edit($id){
+		$obj = new Salle;
+		$salles = $obj->getone($id);
+		require_once 'view/salle/update.php';
+	}
+	
+	function update($id){
+		$obj = new Salle;
+		$obj->libelle = $_POST["libelle"];
+		$obj->capacite = $_POST["capacite"];
+		$obj->updateone($id);
+		header("location:http://localhost/brief5/salle/index");
 	}
 }
-
-
- ?>

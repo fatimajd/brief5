@@ -1,77 +1,39 @@
-<?php
+<?php 
 /**
  * 
  */
+require_once 'connection.php';
+
 class Matiere
 {
-	static public function getAllm(){
-		$stmt = DB::connect()->prepare('SELECT * FROM matiere');
-		$stmt->execute();
-		return $stmt->fetchAll();
-		$stmt->close();
-		$stmt = null;
-	}
-	static public function getMatiere($data){
-		$id = $data['id'];
-		try{
-		$query = 'SELECT * FROM matiere WHERE id=:id';
-		$stmt = DB::connect()->prepare($query);
-		$stmt->execute(array(":id" =>$id));
-		$matiere = $stmt->fetch(PDO::FETCH_OBJ);
-		return $matiere;
+	public $libelle;
+	static $table="matiere";
+
+    public function insert(){
+
+     	$cnx = new Connection;
+     	$cnx->insert(self::$table,['libelle'],[$this->libelle]);
 
 
-		}catch(PDOException $ex){
-			echo "erreur".$ex->getMessage();
-		}
-	}
-	static public function addmat($matieres ){
-		$stmt = DB::connect()->prepare('INSERT INTO matiere (libelle)VALUES(:libelle)');
-		$stmt->bindParam(':libelle',$matieres['libelle']);
+     }
 
-		if ($stmt->execute()) {
-			return 'ok';		
-		}else{
-			return 'error';
-		}
-		$stmt->close();
-		$stmt = null;
+    public static function getAll(){
+    	$cnx = new Connection;
+    	return $cnx->select(self::$table);
+    }
+    public static function deleteone($id){
+        $cnx = new Connection;
+        $cnx->delete(self::$table,$id);
+    }
 
+    public function edit($id) {
+         $cnx = new Connection;
+         return $cnx->edit(self::$table,$id);
 
-
-	}
-	static public function update($matieres ){
-		$stmt = DB::connect()->prepare('UPDATE matiere SET libelle = :libelle WHERE id = :id');
-		$stmt->bindParam(':id',$matieres['id']);
-		$stmt->bindParam(':libelle',$matieres['libelle']);
-
-		if ($stmt->execute()) {
-			return 'ok';		
-		}else{
-			return 'error';
-		}
-		$stmt->close();
-		$stmt = null;
-
-
-
-	}
-	static public function delete($data){
-		$id = $data['id'];
-		try{
-		$query = 'DELETE  FROM matiere WHERE id=:id';
-		$stmt = DB::connect()->prepare($query);
-		$stmt->execute(array(":id" =>$id));
-		if ($stmt->execute()) {
-			return 'ok';		
-		}
-		
-
-		}catch(PDOException $ex){
-			echo "erreur".$ex->getMessage();
-		}
-	}
+    }
+    public function updateone($id){
+        $cnx = new Connection;
+        $cnx->update(self::$table,['libelle'],[$this->libelle],$id);
+    }
 }
-
-
- ?>
+?>

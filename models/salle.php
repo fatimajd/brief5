@@ -1,79 +1,47 @@
 <?php
+
 /**
  * 
  */
+require_once 'connection.php';
 class Salle
 {
-	static public function getAlls(){
-		$stmt = DB::connect()->prepare('SELECT * FROM salle');
-		$stmt->execute();
-		return $stmt->fetchAll();
-		$stmt->close();
-		$stmt = null;
+	public $libelle;
+	public $capacite;
+	static $table="salle";
+
+	function index()
+	{
+		require_once __DIR__.'/../view/salle/index.php';
 	}
-		static public function getSalle($data){
-		$id = $data['id'];
-		try{
-		$query = 'SELECT * FROM salle WHERE id=:id';
-		$stmt = DB::connect()->prepare($query);
-		$stmt->execute(array(":id" =>$id));
-		$salle = $stmt->fetch(PDO::FETCH_OBJ);
-		return $salle;
-
-
-		}catch(PDOException $ex){
-			echo "erreur".$ex->getMessage();
-		}
+	function insert($Libelle,$capacite){
+		$this->libelle=$Libelle;
+		$this->capacite=$capacite;
+		$cnx = new Connection;
+		$cnx->insert(self::$table,['libelle','capacite'],[$this->libelle,$this->capacite]);
 	}
-	static public function addsal($salles ){
-		$stmt = DB::connect()->prepare('INSERT INTO salle (libellesalle,capacitesalle)VALUES(:libellesalle,:capacitesalle)');
-		$stmt->bindParam(':libellesalle',$salles['libellesalle']);
-		$stmt->bindParam(':capacitesalle',$salles['capacitesalle']);
 
-		if ($stmt->execute()) {
-			return 'ok';		
-		}else{
-			return 'error';
-		}
-		$stmt->close();
-		$stmt = null;
-
-
+	  public static function onedelete($id){
+		$cnx = new Connection;
+		$cnx->delete(self::$table,$id);
+	}
+	function getAll(){
+		$cnx = new Connection;
+		return $cnx->select(self::$table);
 
 	}
-	static public function update($salles ){
-		$stmt = DB::connect()->prepare('UPDATE salle SET libellesalle = :libellesalle,capacitesalle =:capacitesalle WHERE id = :id');
-		$stmt->bindParam(':id',$salles['id']);
-		$stmt->bindParam(':libellesalle',$salles['libellesalle']);
-		$stmt->bindParam(':capacitesalle',$salles['capacitesalle']);
 
-		if ($stmt->execute()) {
-			return 'ok';		
-		}else{
-			return 'error';
-		}
-		$stmt->close();
-		$stmt = null;
-
-
-
+	 public function getone($id){
+		$cnx = new Connection;
+		return $cnx->edit(self::$table,$id);
 	}
-	static public function delete($data){
-		$id = $data['id'];
-		try{
-		$query = 'DELETE  FROM salle WHERE id=:id';
-		$stmt = DB::connect()->prepare($query);
-		$stmt->execute(array(":id" =>$id));
-		if ($stmt->execute()) {
-			return 'ok';		
-		}
-		
-
-		}catch(PDOException $ex){
-			echo "erreur".$ex->getMessage();
-		}
+	public function updateone($id){
+		$cnx = new Connection;
+		$cnx->update(self::$table,['libelle','capacite'],[$this->libelle,$this->capacite],$id);
 	}
+
+
+	
+
+	
 }
-
-
- ?>

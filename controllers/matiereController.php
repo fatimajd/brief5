@@ -1,65 +1,49 @@
 <?php
-
-class matiereController{
-	public function getAllMatiere(){
-		$matieres = Matiere::getAllm();
-		return $matieres;
-	}
-	public function getOneMatiere(){
-		if (isset($_POST['id'])) {
-			$data  = array(
-				'id' =>$_POST['id'] 
-		);
-		
-		$matiere = Matiere::getMatiere($data);
-		return $matiere;
-	}
+require_once 'models/matiere.php';
+/**
+ * 
+ */
+class MatiereController
+{
+	
+	public function index(){
+		$obj = new Matiere;
+	    $matieres =$obj->getAll();
+		require_once 'view/matiere/index.php';
 	}
 
-	public function addMatiere(){
-		if (isset($_POST['submit'])) {
-			if (!empty($_POST['libelle'])){ 
-			$matieres= array(
-				'libelle' =>$_POST['libelle']
-				 );
-			$result = Matiere::addmat($matieres);
-			header('location:addmatiere');
-		}else{
-			echo("<SCRIPT LANGUAGE='JavaScript'>
-                window.alert('Tous les champs obligatoir');
-                </SCRIPT>");
-		}
-			
-		}
-	}
-	public function updateMatiere(){
-		if (isset($_POST['submit'])) {
+	public function create(){
 
-			$matieres= array(
-				'id' =>$_POST['id'] ,
-				'libelle' =>$_POST['libelle'] );
-			$result = Matiere::update($matieres);
-			if ($result === 'ok')
-			 {
-			 	header('location:addmatiere');
-				
-			}else{
-				echo $result;
-			}
-		}
-	}
-	public function deleteMatiere(){
-		if (isset($_POST['id'])) {
-			$data['id']= $_POST['id'];
-			$result = Matiere::delete($data);
-			if ($result === 'ok') {
+		require_once 'view/matiere/create.php';
 
-				header('location:addmatiere');		}
-		}else{
-			echo $result;
-		}
+	}
+	public function save(){
+
+		$obj = new Matiere;
+		$obj->libelle = $_POST["libelle"];
+		$obj->insert();
+		header("location:http://localhost/brief5/matiere/index");
+	}
+
+	public function delete($id){
+		$obj = new Matiere;
+		$obj->deleteone($id);
+		header("location:http://localhost/brief5/matiere/index");
+	}
+
+	function edit($id){
+		$obj = new Matiere;
+		$matieres = $obj->edit($id);
+		require_once 'view/matiere/update.php';
+	}
+	 
+	 public function update($id){
+	 	
+		$obj = new Matiere;
+		$obj->libelle = $_POST["libelle"];
+		$obj->updateone($id);
+		header("location:http://localhost/brief5/matiere/index");
 	}
 }
 
-
- ?>
+?>

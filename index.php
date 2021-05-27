@@ -1,26 +1,48 @@
 <?php
-require_once './views/includes/header.php';
-require_once './autoload.php';
-require_once './controllers/homeController.php';
 
+
+$params=explode('/',$_GET['p']);
+
+if (isset($params[0]) & !empty($params[0])) 
+{
 	
-$home = new HomeController();
+	$controller=ucfirst($params[0]).'Controller';
+	if (file_exists("controllers/".$controller.'.php')) 
+	{	
+		require_once 'controllers/' . $controller . ".php";
+        $obj = new $controller();
+        if (isset($params[1]) & !empty($params[1])) {
+            if (method_exists($obj, $params[1])) {
+                $action = $params[1];
 
-$pages=['home','addensignement','update','delete','addgroupe','addsalle','addmatiere','updateSalle','updateGroupe','updateMatiere','deleteMatiere','deleteGroupe','deleteSalle'];
-if(isset($_GET['page'])){
- if(in_array($_GET['page'], $pages)){
+                if (isset($params[2]) & !empty($params[2])) {
+                    $obj->$action($params[2]);
+                } else {
+                    $obj->$action();
+                }
+            } else {
+                http_response_code(404);
+                echo "this method doesn't exist";
+            }
+		}else
+		{
+			$action="index";
+			$obj->$action();
+		}
 
- 	$page= $_GET['page'];
- 	$home->index($page);
- }else{
- 	include('views/includes/404.php');
- }
- }else{
- 	$home->index('home'); 
- }
-
- ?>
-<?php 
-require_once './views/includes/footer.php';
-
- ?>
+	}else
+	{
+		http_response_code(404);
+		echo "this page doesn't exsit";
+	}
+	
+}else
+{
+	require_once "controllers/Home.php";
+	$obj=new Home();
+	$obj->index('login');
+	
+	
+	
+	
+}
